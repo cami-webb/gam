@@ -60,6 +60,6 @@ targets:
     duration: P1D
 
 model:
-  k: 5          # basis dimension for smooth terms
+  k: 10         # basis dimension for smooth terms
   method: REML  # smoothing parameter estimation method
   random_seed: 42
