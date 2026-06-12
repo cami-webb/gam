@@ -1,0 +1,65 @@
+project_id: bu4cast
+
+s3:
+  endpoint: 'https://minio-s3.apps.shift.nerc.mghpcc.org'
+  read_bucket:  'bu4cast-ci-read'
+  write_bucket: 'bu4cast-ci-write'
+  submissions_path: 'challenges/project_id=bu4cast/submissions'
+
+# ----- active target -----
+target: tree   # tree | coastal | urban
+
+targets:
+  tree:
+    schedule: manual   # run via workflow_dispatch only, not daily cron
+    model_id: gam_tree
+    covariate_s3_key: 'challenges/project_id=bu4cast/metadata/tree_covariates.csv'
+    covariates:
+      - shade_buildings
+      - shade_all
+      - eji
+      - impervious_frac
+      - industrial_frac_500m
+      - dist_road_m
+      - poverty_rate
+      - pop_density
+      - lswi
+      - tmax
+      - tmin
+      - prcp
+      - srad
+      - vp
+    intervals:
+      - name: A-B
+        start_year: 2006
+        end_year:   2014
+      - name: B-C
+        start_year: 2014
+        end_year:   2021
+      - name: A-C
+        start_year: 2006
+        end_year:   2021
+    response_growth: growth_cm_yr
+    response_mort:   dead_0621
+    duration: P1Y
+
+  coastal:
+    schedule: '0 6 * * *'
+    model_id: gam_coastal
+    covariate_s3_key: 'challenges/project_id=bu4cast/metadata/coastal_covariates.csv'
+    covariates: []
+    response: chlora_cci_corrected
+    duration: P1D
+
+  urban:
+    schedule: '0 7 * * *'
+    model_id: gam_urban
+    covariate_s3_key: 'challenges/project_id=bu4cast/metadata/urban_covariates.csv'
+    covariates: []
+    response: []
+    duration: P1D
+
+model:
+  k: 5          # basis dimension for smooth terms
+  method: REML  # smoothing parameter estimation method
+  random_seed: 42
